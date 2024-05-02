@@ -38,9 +38,6 @@ L.control.scale({
 async function showStations(url) {
     let response = await fetch(url);
     let geojson = await response.json();
-  
-   
-    L.geoJSON(geojson).addTo(map);
     // Wetterstationen mit Icons und Popups
     console.log(geojson);
     L.geoJSON(geojson, {
