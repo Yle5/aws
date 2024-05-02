@@ -53,6 +53,7 @@ async function showStations(url) {
     },
 
     onEachFeature: function (feature, layer) {
+        let pointInTime = new Date(feature.properties.date);
         layer.bindPopup(`
         <h4>${feature.properties.name} (${feature.geometry.coordinates[2]}m)</h4>
         <ul>
@@ -61,7 +62,7 @@ async function showStations(url) {
         <li>Windgeschwindigkeit (km/h): ${feature.properties.WG || "--"}</li>
         <li>Schneehöhe (cm): ${feature.properties.HS || "--"}</li>
         </ul>
-        ${feature.properties.date}
+        <span>${pointInTime.toLocaleString()}</span>
     
         `)
     }
