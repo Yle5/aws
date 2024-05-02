@@ -15,6 +15,7 @@ let map = L.map("map", {
 let themaLayer = {
     stations: L.featureGroup().addTo(map),
     temperature: L.featureGroup().addTo(map), 
+    wind: L.featureGroup().addTo(map),
 }
 
 // Hintergrundlayer
@@ -28,7 +29,8 @@ L.control.layers({
     "Esri WorldImagery": L.tileLayer.provider("Esri.WorldImagery")
 }, {
     "Wetterstationen": themaLayer.stations,
-    "Temperatur": themaLayer.temperature, 
+    "Temperatur °C": themaLayer.temperature,
+    "Wind km/h": themaLayer.wind, 
 }).addTo(map);
 
 // Maßstab
@@ -53,16 +55,36 @@ function showTemperature(geojson) {
              }
         },
         pointToLayer: function(feature, latlng) {
+            let color = getColor(feature.properties.LT, COLORS.temperature);
             return L.marker(latlng, {
                 icon: L.divIcon({
                     className: "aws-div-icon", 
-                    html: `<span>${feature.properties.LT}</span>`
+                    html: `<span style="background-color:${color};">${feature.properties.LT.toFixed(1)}</span>`
                 })
             })
         }
     }).addTo(themaLayer.temperature);
 }
 
+function showWind(geojson) {
+    L.geoJSON(geojson, {
+        filter: function(feature) {
+             //feature.properties.WG
+             if (feature.properties.WG > -50 && feature.properties.WG < 50) {
+                return true;
+             }
+        },
+        pointToLayer: function(feature, latlng) {
+            let color = getColor(feature.properties.WG, COLORS.wind);
+            return L.marker(latlng, {
+                icon: L.divIcon({
+                    className: "aws-div-icon", 
+                    html: `<span style="background-color:${color};">${feature.properties.WG.toFixed(1)}</span>`
+                })
+            })
+        }
+    }).addTo(themaLayer.wind);
+}
 // GeoJSON der Wetterstationen laden
 async function showStations(url) {
     let response = await fetch(url);
@@ -97,6 +119,7 @@ async function showStations(url) {
     }
   }).addTo(themaLayer.stations)
   showTemperature(geojson);  
+  showWind(geojson);
 
 
 
