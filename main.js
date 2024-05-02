@@ -37,38 +37,40 @@ L.control.scale({
 // GeoJSON der Wetterstationen laden
 async function showStations(url) {
     let response = await fetch(url);
-    let geojson = await response.json(); 
-
+    let geojson = await response.json();
+  
+   
     L.geoJSON(geojson).addTo(map);
     // Wetterstationen mit Icons und Popups
     console.log(geojson);
     L.geoJSON(geojson, {
-        pointToLayer: function(feature, latlng) {
+        pointToLayer: function (feature, latlng) {
 
             return L.marker(latlng, {
                 icon: L.icon({
                   iconUrl: "icons/wifi.png", 
                   iconAnchor:  [16, 37],
-                  popupanchor: [0, -37]
-        
+                  popupAnchor: [0, -37]     
         })  
       });
     },
+
     onEachFeature: function (feature, layer) {
         layer.bindPopup(`
         <h4>${feature.properties.name} (${feature.geometry.coordinates[2]})</h4>
         <ul>
-        <li>Lufttemperatur (°C): ${feature.properties.LT}</li>
-        <li>Relative Luftfeuchte (%): ${feature.properties.RH}</li>
-        <li>Windgeschwindigkeit (km/h): ${feature.properties.WG}</li>
-        <li>Schneehöhe (cm): ${feature.properties.HS}</li>
+        <li>Lufttemperatur (°C): ${feature.properties.LT || "--"}</li>
+        <li>Relative Luftfeuchte (%): ${feature.properties.RH || "--"}</li>
+        <li>Windgeschwindigkeit (km/h): ${feature.properties.WG || "--"}</li>
+        <li>Schneehöhe (cm): ${feature.properties.HS || "--"}</li>
         </ul>
         <letzteErhebung>${feature.properties.date}</letzteErhebung>
     
         `)
     }
 }).addTo(themaLayer.stations)
-   
+
+
 
          
     
