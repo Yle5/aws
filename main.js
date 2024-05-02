@@ -16,6 +16,7 @@ let themaLayer = {
     stations: L.featureGroup().addTo(map),
     temperature: L.featureGroup().addTo(map), 
     wind: L.featureGroup().addTo(map),
+    schnee: L.featureGroup().addTo(map),
 }
 
 // Hintergrundlayer
@@ -31,6 +32,7 @@ L.control.layers({
     "Wetterstationen": themaLayer.stations,
     "Temperatur °C": themaLayer.temperature,
     "Wind km/h": themaLayer.wind, 
+    "Schneehöhe in cm": themaLayer.schnee,
 }).addTo(map);
 
 // Maßstab
@@ -70,7 +72,7 @@ function showWind(geojson) {
     L.geoJSON(geojson, {
         filter: function(feature) {
              //feature.properties.WG
-             if (feature.properties.WG > -50 && feature.properties.WG < 50) {
+             if (feature.properties.WG > 0 && feature.properties.WG < 250) {
                 return true;
              }
         },
@@ -78,13 +80,34 @@ function showWind(geojson) {
             let color = getColor(feature.properties.WG, COLORS.wind);
             return L.marker(latlng, {
                 icon: L.divIcon({
-                    className: "aws-div-icon", 
-                    html: `<span style="background-color:${color};">${feature.properties.WG.toFixed(1)}</span>`
+                    className: "aws-div-icon-wind", 
+                    html: `<span title="${feature.properties.WG.toFixed(1)} km/h"><i style="transform:rotate(${feature.properties.WR}deg);color:${color}" class="fa-solid fa-circle-arrow-down"></i></span>`
                 })
             })
         }
     }).addTo(themaLayer.wind);
 }
+
+function showSchnee(geojson) {
+    L.geoJSON(geojson, {
+        filter: function(feature) {
+             //feature.properties.Hs
+             if (feature.properties.LT > -50 && feature.properties.HS < 50) {
+                return true;
+             }
+        },
+        pointToLayer: function(feature, latlng) {
+            let color = getColor(feature.properties.HS, COLORS.snow);
+            return L.marker(latlng, {
+                icon: L.divIcon({
+                    className: "aws-div-icon", 
+                    html: `<span style="background-color:${color};">${feature.properties.HS.toFixed(1)}</span>`
+                })
+            })
+        }
+    }).addTo(themaLayer.schnee);
+}
+
 // GeoJSON der Wetterstationen laden
 async function showStations(url) {
     let response = await fetch(url);
@@ -120,6 +143,7 @@ async function showStations(url) {
   }).addTo(themaLayer.stations)
   showTemperature(geojson);  
   showWind(geojson);
+  showSchnee(geojson);
 
 
 
