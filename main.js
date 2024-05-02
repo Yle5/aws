@@ -61,7 +61,7 @@ async function showStations(url) {
         <li>Windgeschwindigkeit (km/h): ${feature.properties.WG || "--"}</li>
         <li>Schneehöhe (cm): ${feature.properties.HS || "--"}</li>
         </ul>
-        <letzteErhebung>${feature.properties.date}</letzteErhebung>
+        ${feature.properties.date}
     
         `)
     }
